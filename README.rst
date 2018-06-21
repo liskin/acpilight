@@ -26,7 +26,7 @@ professional external monitors can be controlled as well.
 Installation
 ------------
 
-If you have ``make`` available, to install the executable, man page, and udev 
+If you have ``make`` available, to install the executable, man page, and udev
 rules; run::
 
   sudo make install
