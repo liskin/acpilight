@@ -12,6 +12,7 @@ import argparse
 from collections import OrderedDict
 import os, sys
 import time
+from math import log10
 
 
 def error(msg):
@@ -63,6 +64,25 @@ class PcController(RawController):
         bprop = super(PcController, self.__class__).brightness
         bprop.fset(self, pc*super().max_brightness/100)
 
+class LogController(RawController):
+    """
+    Perceived brightness controls, based on this idea:
+    https://konradstrack.ninja/blog/changing-screen-brightness-in-accordance-with-human-perception/
+    """
+
+    @property
+    def max_brightness(self):
+        return 100
+
+    @property
+    def brightness(self):
+        return log10(super().brightness)/log10(super().max_brightness)*self.max_brightness
+
+    @brightness.setter
+    def brightness(self, pc):
+        bprop = super(LogController, self.__class__).brightness
+        bprop.fset(self, 10**(pc/self.max_brightness*log10(super().max_brightness)))
+
 def sweep_brightness(ctrl, current, target, steps, delay):
     sleep = (delay / 1000.) / steps
     for s in range(1, steps):
@@ -96,6 +116,7 @@ def main():
     g.add_argument("-dec", metavar="PERCENT", type=float, help="Decrease brightness")
     g.add_argument("pc", metavar="PERCENT", type=pc, nargs='?',
                    help="[=+-]PERCENT to set, increase, decrease brightness")
+    ap.add_argument("-perceived", action="store_true", help="Use perceived brightness controls")
     ap.add_argument("-ctrl", help="Set controller to use")
     ap.add_argument("-time", metavar="MILLISECS", type=int,
                     default=200, help="Fading period (in milliseconds, default: 200)")
@@ -115,13 +136,14 @@ def main():
         return 0
 
     # set current operating controller
+    ctrl_factory = LogController if args.perceived else PcController
     if args.ctrl is None:
-        ctrl = PcController(next(iter(ctrls.values())))
+        ctrl = ctrl_factory (next(iter(ctrls.values())))
     else:
         if args.ctrl not in ctrls:
             error("unknown controller '{}'".format(args.ctrl))
             return 1
-        ctrl = PcController(ctrls[args.ctrl])
+        ctrl = ctrl_factory (ctrls[args.ctrl])
 
     # uniform set arguments
     if args.pc is not None:
