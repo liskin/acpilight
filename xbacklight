@@ -34,6 +34,10 @@ class RawController(object):
         self._max_brightness = int(open(os.path.join(path, "max_brightness")).read())
 
     @property
+    def max_brightness(self):
+        return self._max_brightness
+
+    @property
     def brightness(self):
         return int(open(self._brightness_path).read())
 
@@ -47,12 +51,17 @@ class PcController(RawController):
         super().__init__(path)
 
     @property
+    def max_brightness(self):
+        return 100
+
+    @property
     def brightness(self):
-        return super().brightness*100/self._max_brightness
+        return super().brightness*100/super().max_brightness
 
     @brightness.setter
     def brightness(self, pc):
-        super(PcController, self.__class__).brightness.fset(self, pc*self._max_brightness/100)
+        bprop = super(PcController, self.__class__).brightness
+        bprop.fset(self, pc*super().max_brightness/100)
 
 def sweep_brightness(ctrl, current, target, steps, delay):
     sleep = (delay / 1000.) / steps
@@ -139,7 +148,7 @@ def main():
             target = current + args.inc
         elif args.dec is not None:
             target = current - args.dec
-        target = clamp(target, 0, 100)
+        target = clamp(target, 0, ctrl.max_brightness)
         if current == target:
             pass
         elif args.steps <= 1 or args.time < 1:
