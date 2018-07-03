@@ -10,7 +10,7 @@ xbacklight \- adjust display and keyboard backlight using the /sys filesystem
 [flags] -list
 .br
 .B xbacklight
-[flags] -get | \-getf
+[flags] -get | \-getf | \-get-steps
 .br
 .B xbacklight
 [flags] \-set \fIPERCENT\fP | \-inc \fIPERCENT\fP | \-dec \fIPERCENT\fP
@@ -31,6 +31,8 @@ Print the list of controllable devices.
 Print out the backlight brightness as a percentage.
 .IP \-getf
 Same as \fI\-get\fP, but without rounding.
+.IP \-get\-steps
+Return the number of available brightness steps.
 .SH SET OPERATIONS
 The brightness can be set with either command flags or positional arguments.
 When changing brightness level, both integer and fractional values (as reported
@@ -84,15 +86,16 @@ Setting a high \fIFPS\fP value will not improve the transition smoothness
 beyond a certain point.
 .P
 Most keyboard's backlights have a very coarse resolution, with usually only 4
-brightness steps available. Supplying small relative increments will not
-effectively change the backlight illumination. Use large values (+30) or set
-absolute percentages directly (=70).
+brightness steps available. Use \fI-get-steps\fP to determine the available
+resolution. Supplying small relative increments will not effectively change the
+backlight illumination. Use large values (+30) or set absolute percentages
+directly (=70).
 .SH PORTABILITY
 This version of \fBxbacklight\fP is part of "acpilight" and contains
 several enhancements not available in the original version:
 .P
-The command-line flags \fI-list\fP, \fI-ctrl\fP, \fI-getf\fP and
-\fI-fps\fP do not exist in the original \fBxbacklight\fP.
+The command-line flags \fI-list\fP, \fI-ctrl\fP, \fI-getf\fP, \fI-get-steps\fP,
+\fI-perceived\fP, and \fI-fps\fP do not exist in the original \fBxbacklight\fP.
 .P
 Fractional values are not allowed in the original \fBxbacklight\fP.
 .P

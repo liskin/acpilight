@@ -40,6 +40,10 @@ class RawController(object):
         return self._max_brightness
 
     @property
+    def brightness_steps(self):
+        return self._max_brightness + 1
+
+    @property
     def brightness(self):
         return int(open(self._brightness_path).read())
 
@@ -113,6 +117,7 @@ def main():
     g.add_argument("-h", "-help", action="help", help="Show this help and exit")
     g.add_argument("-list", action="store_true", help="List controllers")
     g.add_argument("-getf", action="store_true", help="Get fractional brightness")
+    g.add_argument("-get-steps", action="store_true", help="Get brightness steps")
     g.add_argument("-get", action="store_true", help="Get brightness")
     g.add_argument("-set", metavar="PERCENT", type=float, help="Set brightness")
     g.add_argument("-inc", metavar="PERCENT", type=float, help="Increase brightness")
@@ -169,6 +174,8 @@ def main():
         print(ctrl.brightness)
     elif args.get:
         print(int(round(ctrl.brightness)))
+    elif args.get_steps:
+        print(int(ctrl.brightness_steps))
     else:
         current = ctrl.brightness
         if args.set is not None:
