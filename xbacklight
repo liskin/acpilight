@@ -139,14 +139,18 @@ def main():
         return 0
 
     # set current operating controller
-    ctrl_factory = LogController if args.perceived else PcController
     if args.ctrl is None:
-        ctrl = ctrl_factory (next(iter(ctrls.values())))
+        ctrl_path = next(iter(ctrls.values()))
     else:
         if args.ctrl not in ctrls:
             error("unknown controller '{}'".format(args.ctrl))
             return 1
-        ctrl = ctrl_factory (ctrls[args.ctrl])
+        ctrl_path = ctrls[args.ctrl]
+
+    if args.perceived:
+        ctrl = LogController(ctrl_path)
+    else:
+        ctrl = PcController(ctrl_path)
 
     # uniform set arguments
     if args.pc is not None:
