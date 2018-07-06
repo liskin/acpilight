@@ -62,8 +62,8 @@ The following rules allow users in the video group to set the keyboard
 backlight as well::
 
   SUBSYSTEM=="leds", ACTION=="add", KERNEL=="*::kbd_backlight", \
-    RUN+="/bin/chgrp video /sys/class/backlight/%k/brightness", \
-    RUN+="/bin/chmod g+w /sys/class/backlight/%k/brightness"
+    RUN+="/bin/chgrp video /sys/class/leds/%k/brightness", \
+    RUN+="/bin/chmod g+w /sys/class/leds/%k/brightness"
 
 Please report if other laptops have working interfaces to control the keyboard
 backlight.
